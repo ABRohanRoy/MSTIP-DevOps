@@ -1,0 +1,29 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git 'https://github.com/ABRohanRoy/MSTIP-DevOps.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    docker.build('flask-cicd')
+                }
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                withDockerRegistry([credentialsId: 'docker-hub-creds', url: '']) {
+                    script {
+                        docker.image('flask-cicd').push('latest')
+                    }
+                }
+            }
+        }
+    }
+}
